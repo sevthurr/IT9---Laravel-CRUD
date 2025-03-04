@@ -7,7 +7,10 @@
 
         <title>{{ config('app.name', 'TaskMaster') }}</title>
 
-            <!-- Bootstrap CSS CDN -->
+        <!--HTMX-->
+        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+        <!-- Bootstrap CSS CDN -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-9ndCyUa6mY2F6v+2P7Z3w0Fq1qP4hzxbgjp3nGH9sAUHlhF5O7ExZc+GcXyX9FQF" crossorigin="anonymous">
 

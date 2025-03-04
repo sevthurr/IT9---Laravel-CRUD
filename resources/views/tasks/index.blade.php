@@ -36,10 +36,19 @@
             background-color: #dc3545;
             color: white;
         }
+        .custom-btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .custom-btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
         .custom-table {
-            width: 100%;
+            width: 110%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top:40px;
+            margin-left: 0px;
         }
         .custom-table th, 
         .custom-table td {
@@ -56,9 +65,10 @@
         }
     </style>
 
-    <div class="custom-container">
-        <h1 class="custom-heading">TaskMaster</h1>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 
+    <div id="tasks-container" class="custom-container">
+        <h1 class="custom-heading";>TaskMaster</h1>
 
         @if (session('success'))
             <div class="custom-alert">
@@ -66,57 +76,51 @@
             </div>
         @endif
 
-        <div class="d-flex justify-content-end mb-3">
-            <a href="{{ route('tasks.create') }}" class="custom-btn custom-btn-primary">
-                Create New Task
+        <div class="d-flex justify-content-start mb-3">
+            <a href="{{ route('tasks.index') }}" 
+               class="custom-btn custom-btn-primary me-2"
+               style="background-color: grey; margin-left: 10px;"
+               hx-get="{{ route('tasks.index') }}"
+               hx-target="#tasks-table"
+               hx-swap="innerHTML">
+                All Tasks
+            </a>
+            <a href="{{ route('tasks.completed') }}" 
+               class="custom-btn custom-btn-success me-2"
+               style="margin-left: 10px;"
+               hx-get="{{ route('tasks.completed') }}"
+               hx-target="#tasks-table"
+               hx-swap="innerHTML">
+                Completed
+            </a>
+            <a href="{{ route('tasks.inProgress') }}" 
+               class="custom-btn custom-btn-warning me-2"
+               style="margin-left: 10px;"
+               hx-get="{{ route('tasks.inProgress') }}"
+               hx-target="#tasks-table"
+               hx-swap="innerHTML">
+                In Progress
+            </a>
+            <a href="{{ route('tasks.pending') }}" 
+               class="custom-btn custom-btn-info me-2"
+               style="margin-left: 10px;"
+               hx-get="{{ route('tasks.pending') }}"
+               hx-target="#tasks-table"
+               hx-swap="innerHTML">
+                Pending
             </a>
         </div>
 
-        <table class="custom-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th style="width: 150px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($tasks as $task)
-                    <tr>
-                        <td>{{ $task->id }}</td>
-                        <td>{{ $task->title }}</td>
-                        <td>{{ $task->status }}</td>
-                        <td>{{ $task->description }}</td>
-                        <td>{{ $task->created_at }}</td>
-                        <td style="width: 150px; white-space: nowrap;">
-                            <a href="{{ route('tasks.edit', $task->id) }}" 
-                               style="display: inline-block; margin-right: 8px;" 
-                               class="custom-btn custom-btn-warning btn-sm">
-                                Edit
-                            </a>
-                        
-                            <form action="{{ route('tasks.destroy', $task->id) }}" 
-                                  method="POST" 
-                                  style="display: inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        class="custom-btn custom-btn-danger btn-sm"
-                                        onclick="return confirm('Are you sure you want to delete this task?');">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>                        
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center">No tasks found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="d-flex justify-content-end mb-3" style="margin-top: 20px;">
+            <a href="{{ route('tasks.create') }}" class="custom-btn custom-btn-primary" style = "margin-left: 5px";>
+                Create New Task
+            </a>
+        </div>
+        
+        <!-- Table container for HTMX updates -->
+        <div id="tasks-table">
+            @include('tasks.partials.task-table', ['tasks' => $tasks])
+        </div>
     </div>
+    
 </x-app-layout>

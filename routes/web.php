@@ -4,7 +4,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('tasks', TaskController::class);
+Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+
+Route::get('/tasks/completed', [TaskController::class, 'completed'])->name('tasks.completed');
+Route::get('/tasks/in-progress', [TaskController::class, 'inProgress'])->name('tasks.inProgress');
+Route::get('/tasks/pending', [TaskController::class, 'pending'])->name('tasks.pending');
+
+Route::resource('tasks', TaskController::class)->except(['index']);
 
 Route::get('/', function () {
     return view('welcome');

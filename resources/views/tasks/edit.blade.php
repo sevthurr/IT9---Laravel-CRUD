@@ -1,4 +1,3 @@
-<!-- resources/views/tasks/edit.blade.php -->
 <x-app-layout>
     <style>
        
@@ -59,50 +58,52 @@
         }
     </style>
 
-    <div class="custom-container">
-        <h1 class="custom-heading">Edit Task</h1>
+ <div id="tasks-container" class="custom-container">
+    <h1 class="custom-heading">Edit Task</h1>
 
-       
-        @if ($errors->any())
-            <div class="alert-error">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    @if ($errors->any())
+        <div class="alert-error">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        <form action="{{ route('tasks.update', $task->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+    <form action="{{ route('tasks.update', $task->id) }}" method="POST"
+          hx-post="{{ route('tasks.update', $task->id) }}"
+          hx-target="#tasks-container"
+          hx-swap="outerHTML">
+        @csrf
+        @method('PUT')
 
-            <div class="form-group">
-                <label for="title">Title:</label>
-                <input type="text" name="title" id="title" value="{{ old('title', $task->title) }}" required>
-            </div>
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title" value="{{ old('title', $task->title) }}" required>
+        </div>
 
-            <div class="form-group">
-                <label for="status">Status:</label>
-                <select name="status" id="status" required>
-                    <option value="pending" {{ old('status', $task->status) === 'pending' ? 'selected' : '' }}>
-                        Pending
-                    </option>
-                    <option value="in-progress" {{ old('status', $task->status) === 'in-progress' ? 'selected' : '' }}>
-                        In-Progress
-                    </option>
-                    <option value="completed" {{ old('status', $task->status) === 'completed' ? 'selected' : '' }}>
-                        Completed
-                    </option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select name="status" id="status" required>
+                <option value="pending" {{ old('status', $task->status) === 'pending' ? 'selected' : '' }}>
+                    Pending
+                </option>
+                <option value="in-progress" {{ old('status', $task->status) === 'in-progress' ? 'selected' : '' }}>
+                    In-Progress
+                </option>
+                <option value="completed" {{ old('status', $task->status) === 'completed' ? 'selected' : '' }}>
+                    Completed
+                </option>
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="description">Description (optional):</label>
-                <textarea name="description" id="description" rows="4">{{ old('description', $task->description) }}</textarea>
-            </div>
+        <div class="form-group">
+            <label for="description">Description (optional):</label>
+            <textarea name="description" id="description" rows="4">{{ old('description', $task->description) }}</textarea>
+        </div>
 
-            <button type="submit" class="btn-submit">Update Task</button>
-        </form>
-    </div>
+        <button type="submit" class="btn-submit">Update Task</button>
+    </form>
+</div>
 </x-app-layout>

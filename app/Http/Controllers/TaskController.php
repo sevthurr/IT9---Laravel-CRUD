@@ -7,84 +7,135 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    
-      //display a listing of the tasks.
-     
     public function index()
     {
-        // get all tasks from the database
         $tasks = Task::all();
+        $filter = 'all';
 
-        // pass tasks to the index view
-        return view('tasks.index', compact('tasks'));
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'));
+        }
+
+        return view('tasks.index', compact('tasks', 'filter'));
     }
 
-    
-      //form for creating a new task.
-     
     public function create()
     {
-        // return the create view
         return view('tasks.create');
     }
 
-    
-      //Store a newly created task in storage.
-     
     public function store(Request $request)
     {
-        // validate input
-        // status must be one of the enum values
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:pending,in-progress,completed',
+            'status'      => 'required|in:pending,in-progress,completed',
         ]);
 
-        // create and save the task
         Task::create($request->all());
+        $tasks = Task::all();
+        $filter = 'all';
+
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'))
+                   ->with('success', 'Task created successfully!');
+        }
+
         return redirect()->route('tasks.index')
                          ->with('success', 'Task created successfully!');
     }
 
-    
-     //Display the specified task.
-     
     public function show(Task $task)
     {
         return view('tasks.show', compact('task'));
     }
 
-    //edit task form
     public function edit(Task $task)
     {
         return view('tasks.edit', compact('task'));
     }
 
-    //update task function
     public function update(Request $request, Task $task)
     {
-        // Validate input
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:pending,in-progress,completed',
+            'status'      => 'required|in:pending,in-progress,completed',
         ]);
 
- 
         $task->update($request->all());
+        $tasks = Task::all();
+        $filter = 'all';
 
-        // redirect to the index with a success message
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'))
+                   ->with('success', 'Task updated successfully!');
+        }
+
         return redirect()->route('tasks.index')
                          ->with('success', 'Task updated successfully!');
     }
 
-    //delete task function
     public function destroy(Task $task)
     {
         $task->delete();
+        $tasks = Task::all();
+        $filter = 'all';
+
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'))
+                   ->with('success', 'Task deleted successfully!');
+        }
 
         return redirect()->route('tasks.index')
                          ->with('success', 'Task deleted successfully!');
+    }
+
+    public function completed()
+    {
+        $tasks = Task::where('status', 'completed')->get();
+        $filter = 'completed';
+
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'));
+        }
+
+        return view('tasks.index', compact('tasks', 'filter'));
+    }
+
+    public function inProgress()
+    {
+        $tasks = Task::where('status', 'in-progress')->get();
+        $filter = 'in-progress';
+
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'));
+        }
+
+        return view('tasks.index', compact('tasks', 'filter'));
+    }
+
+    public function pending()
+    {
+        $tasks = Task::where('status', 'pending')->get();
+        $filter = 'pending';
+
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'));
+        }
+
+        return view('tasks.index', compact('tasks', 'filter'));
+    }
+
+    public function deleted()
+    {
+        $tasks = Task::onlyTrashed()->get();
+        $filter = 'deleted';
+
+        if (request()->header('HX-Request')) {
+            return view('tasks.partials.task-table', compact('tasks', 'filter'));
+        }
+
+        return view('tasks.index', compact('tasks', 'filter'));
     }
 }
